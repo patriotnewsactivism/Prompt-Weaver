@@ -175,10 +175,27 @@ export default function Session() {
     }
 
     const markdown = lines.join('\n');
-    navigator.clipboard.writeText(markdown);
+
+    // Derive a safe filename from the session title
+    const safeTitle = session.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 80) || 'session';
+    const filename = `${safeTitle}.md`;
+
+    // Trigger file download (no server round-trip)
+    const blob = new Blob([markdown], { type: 'text/markdown; charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+    URL.revokeObjectURL(url);
+
     setExported(true);
     setTimeout(() => setExported(false), 2000);
-    toast({ title: 'Exported to clipboard', description: 'Full session copied as Markdown' });
+    toast({ title: 'Session downloaded', description: `Saved as ${filename}` });
   };
 
   if (!sessionId) {
