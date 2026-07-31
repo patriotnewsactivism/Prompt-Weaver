@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { IterationSkeleton } from '@/components/iteration-skeleton';
-import { ArrowLeft, Sparkles, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Sparkles, Copy, Check, Download } from 'lucide-react';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 
@@ -48,6 +48,7 @@ export default function Session() {
     phase: 'reasoning' | 'prompt' | 'done';
   } | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [exported, setExported] = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -141,9 +142,43 @@ export default function Session() {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
-    toast({
-      title: 'Copied to clipboard',
-    });
+    toast({ title: 'Prompt copied to clipboard' });
+  };
+
+  const handleExport = () => {
+    if (!session) return;
+
+    const lines: string[] = [];
+    lines.push(`# ${session.title}`);
+    lines.push('');
+    lines.push(`**Situation:** ${session.situation}`);
+    lines.push('');
+
+    for (const iteration of session.iterations) {
+      lines.push('---');
+      lines.push('');
+      const heading = iteration.focusArea
+        ? `## Iteration ${iteration.iterationNumber} · ${iteration.focusArea}`
+        : `## Iteration ${iteration.iterationNumber}`;
+      lines.push(heading);
+      lines.push('');
+      lines.push('**Reasoning:**');
+      lines.push('');
+      lines.push(iteration.reasoning);
+      lines.push('');
+      lines.push('**Prompt:**');
+      lines.push('');
+      lines.push('```');
+      lines.push(iteration.prompt);
+      lines.push('```');
+      lines.push('');
+    }
+
+    const markdown = lines.join('\n');
+    navigator.clipboard.writeText(markdown);
+    setExported(true);
+    setTimeout(() => setExported(false), 2000);
+    toast({ title: 'Exported to clipboard', description: 'Full session copied as Markdown' });
   };
 
   if (!sessionId) {
@@ -191,8 +226,33 @@ export default function Session() {
             <ArrowLeft className="w-4 h-4" />
             Back to sessions
           </Link>
-          <h1 className="text-3xl font-bold text-foreground mb-2">{session.title}</h1>
-          <p className="text-muted-foreground">{session.situation}</p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="text-3xl font-bold text-foreground mb-2">{session.title}</h1>
+              <p className="text-muted-foreground">{session.situation}</p>
+            </div>
+            {session.iterations.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                className="shrink-0 gap-2 mt-1"
+                data-testid="button-export"
+              >
+                {exported ? (
+                  <>
+                    <Check className="w-4 h-4 text-green-500" />
+                    Exported!
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    Export as Markdown
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Iterations */}
@@ -225,13 +285,13 @@ export default function Session() {
                   >
                     {copiedId === iteration.id ? (
                       <>
-                        <Check className="w-4 h-4" />
-                        Copied
+                        <Check className="w-4 h-4 text-green-500" />
+                        Copied!
                       </>
                     ) : (
                       <>
                         <Copy className="w-4 h-4" />
-                        Copy
+                        Copy prompt
                       </>
                     )}
                   </Button>
