@@ -103,7 +103,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: Session with iterations
@@ -126,7 +126,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "204":
           description: Deleted
@@ -147,7 +147,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: List of iterations
@@ -168,7 +168,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       requestBody:
         required: true
         content:
@@ -221,19 +221,18 @@ components:
           type: ["string", "null"]
         model:
           type: string
-      required: []
 
     Session:
       type: object
       properties:
         id:
-          type: integer
+          type: number
         title:
           type: string
         situation:
           type: string
         iterationCount:
-          type: integer
+          type: number
         createdAt:
           type: string
           format: date-time
@@ -252,13 +251,13 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: number
         title:
           type: string
         situation:
           type: string
         iterationCount:
-          type: integer
+          type: number
         latestPrompt:
           type: ["string", "null"]
         createdAt:
@@ -280,13 +279,13 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: number
         title:
           type: string
         situation:
           type: string
         iterationCount:
-          type: integer
+          type: number
         iterations:
           type: array
           items:
@@ -324,11 +323,11 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: number
         sessionId:
-          type: integer
+          type: number
         iterationNumber:
-          type: integer
+          type: number
         prompt:
           type: string
         reasoning:
@@ -358,7 +357,6 @@ components:
         focusArea:
           type: ["string", "null"]
           description: Specific aspect to focus improvement on (clarity, specificity, tone, etc.)
-      required: []
 
     ApiError:
       type: object

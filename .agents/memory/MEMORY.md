@@ -1,0 +1,2 @@
+- [Zod v3 + Orval integer fix](zod-orval-integer.md) — use `type: number` (not `type: integer`) in OpenAPI spec to avoid zod.int() codegen error with Zod v3
+- [Gemini integration @google/genai runtime](gemini-api-server-dep.md) — @google/genai must be a direct dep of api-server because esbuild externalizes @google/* patterns

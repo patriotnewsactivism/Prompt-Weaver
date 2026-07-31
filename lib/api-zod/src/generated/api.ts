@@ -44,10 +44,10 @@ export const UpdateSettingsResponse = zod.object({
  * @summary List all prompt sessions
  */
 export const ListSessionsResponseItem = zod.object({
-  "id": zod.int(),
+  "id": zod.number(),
   "title": zod.string(),
   "situation": zod.string(),
-  "iterationCount": zod.int(),
+  "iterationCount": zod.number(),
   "latestPrompt": zod.string().nullable(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -68,10 +68,10 @@ export const CreateSessionBody = zod.object({
 })
 
 export const CreateSessionResponse = zod.object({
-  "id": zod.int(),
+  "id": zod.number(),
   "title": zod.string(),
   "situation": zod.string(),
-  "iterationCount": zod.int(),
+  "iterationCount": zod.number(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 })
@@ -81,18 +81,18 @@ export const CreateSessionResponse = zod.object({
  * @summary Get a session with all its iterations
  */
 export const GetSessionParams = zod.object({
-  "id": zod.coerce.number().int()
+  "id": zod.coerce.number()
 })
 
 export const GetSessionResponse = zod.object({
-  "id": zod.int(),
+  "id": zod.number(),
   "title": zod.string(),
   "situation": zod.string(),
-  "iterationCount": zod.int(),
+  "iterationCount": zod.number(),
   "iterations": zod.array(zod.object({
-  "id": zod.int(),
-  "sessionId": zod.int(),
-  "iterationNumber": zod.int(),
+  "id": zod.number(),
+  "sessionId": zod.number(),
+  "iterationNumber": zod.number(),
   "prompt": zod.string(),
   "reasoning": zod.string().describe('Why this prompt is better than the previous one'),
   "focusArea": zod.string().nullable().describe('The aspect focused on for this improvement'),
@@ -107,7 +107,7 @@ export const GetSessionResponse = zod.object({
  * @summary Delete a session and all its iterations
  */
 export const DeleteSessionParams = zod.object({
-  "id": zod.coerce.number().int()
+  "id": zod.coerce.number()
 })
 
 export const DeleteSessionResponse = zod.void()
@@ -117,13 +117,13 @@ export const DeleteSessionResponse = zod.void()
  * @summary List all iterations for a session
  */
 export const ListIterationsParams = zod.object({
-  "id": zod.coerce.number().int()
+  "id": zod.coerce.number()
 })
 
 export const ListIterationsResponseItem = zod.object({
-  "id": zod.int(),
-  "sessionId": zod.int(),
-  "iterationNumber": zod.int(),
+  "id": zod.number(),
+  "sessionId": zod.number(),
+  "iterationNumber": zod.number(),
   "prompt": zod.string(),
   "reasoning": zod.string().describe('Why this prompt is better than the previous one'),
   "focusArea": zod.string().nullable().describe('The aspect focused on for this improvement'),
@@ -136,7 +136,7 @@ export const ListIterationsResponse = zod.array(ListIterationsResponseItem)
  * @summary Generate the next improved prompt (SSE stream)
  */
 export const GenerateIterationParams = zod.object({
-  "id": zod.coerce.number().int()
+  "id": zod.coerce.number()
 })
 
 export const GenerateIterationBody = zod.object({

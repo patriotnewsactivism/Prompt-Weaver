@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
@@ -78,71 +79,71 @@
   --elevate-1: rgba(0, 0, 0, 0.03);
   --elevate-2: rgba(0, 0, 0, 0.08);
 
-  --background: red; /*replace with H S L */
+  --background: 224 25% 96%;
 
-  --foreground: red; /*replace with H S L */
+  --foreground: 225 20% 12%;
 
-  --border: red; /*replace with H S L */
+  --border: 224 15% 85%;
 
-  --card: red; /*replace with H S L */
+  --card: 0 0% 100%;
 
-  --card-foreground: red; /*replace with H S L */
+  --card-foreground: 225 20% 12%;
 
-  --card-border: red; /*replace with H S L */
+  --card-border: 224 12% 88%;
 
-  --sidebar: red; /*replace with H S L */
+  --sidebar: 224 20% 98%;
 
-  --sidebar-foreground: red; /*replace with H S L */
+  --sidebar-foreground: 225 18% 18%;
 
-  --sidebar-border: red; /*replace with H S L */
+  --sidebar-border: 224 15% 88%;
 
-  --sidebar-primary: red; /*replace with H S L */
+  --sidebar-primary: 193 95% 52%;
 
-  --sidebar-primary-foreground: red; /*replace with H S L */
+  --sidebar-primary-foreground: 0 0% 100%;
 
-  --sidebar-accent: red; /*replace with H S L */
+  --sidebar-accent: 224 18% 93%;
 
-  --sidebar-accent-foreground: red; /*replace with H S L */
+  --sidebar-accent-foreground: 225 18% 18%;
 
-  --sidebar-ring: red; /*replace with H S L */
+  --sidebar-ring: 193 95% 52%;
 
-  --popover: red; /*replace with H S L */
+  --popover: 0 0% 100%;
 
-  --popover-foreground: red; /*replace with H S L */
+  --popover-foreground: 225 20% 12%;
 
-  --popover-border: red; /*replace with H S L */
+  --popover-border: 224 12% 88%;
 
-  --primary: red; /*replace with H S L */
+  --primary: 193 95% 52%;
 
-  --primary-foreground: red; /*replace with H S L */
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: red; /*replace with H S L */
+  --secondary: 224 18% 92%;
 
-  --secondary-foreground: red; /*replace with H S L */
+  --secondary-foreground: 225 18% 18%;
 
-  --muted: red; /*replace with H S L */
+  --muted: 224 18% 94%;
 
-  --muted-foreground: red; /*replace with H S L */
+  --muted-foreground: 225 12% 45%;
 
-  --accent: red; /*replace with H S L */
+  --accent: 193 95% 52%;
 
-  --accent-foreground: red; /*replace with H S L */
+  --accent-foreground: 0 0% 100%;
 
-  --destructive: red; /*replace with H S L */
+  --destructive: 0 72% 51%;
 
-  --destructive-foreground: red; /*replace with H S L */
+  --destructive-foreground: 0 0% 100%;
 
-  --input: red; /*replace with H S L */
-  --ring: red; /*replace with H S L */
-  --chart-1: red; /*replace with H S L */
-  --chart-2: red; /*replace with H S L */
-  --chart-3: red; /*replace with H S L */
-  --chart-4: red; /*replace with H S L */
-  --chart-5: red; /*replace with H S L */
+  --input: 224 15% 82%;
+  --ring: 193 95% 52%;
+  --chart-1: 193 95% 52%;
+  --chart-2: 224 50% 60%;
+  --chart-3: 280 65% 60%;
+  --chart-4: 45 90% 55%;
+  --chart-5: 150 60% 50%;
 
-  --app-font-sans: 'Inter', sans-serif;
+  --app-font-sans: 'Space Grotesk', system-ui, sans-serif;
   --app-font-serif: Georgia, serif;
-  --app-font-mono: Menlo, monospace;
+  --app-font-mono: 'IBM Plex Mono', 'Courier New', monospace;
   --radius: 0.5rem; /* 8px */
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0); /*replace with H S L */
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0); /*replace with H S L */
@@ -227,68 +228,68 @@
   --elevate-1: rgba(255, 255, 255, 0.04);
   --elevate-2: rgba(255, 255, 255, 0.09);
 
-  --background: red; /*replace with H S L */
+  --background: 225 28% 8%;
 
-  --foreground: red; /*replace with H S L */
+  --foreground: 224 15% 92%;
 
-  --border: red; /*replace with H S L */
+  --border: 225 18% 18%;
 
-  --card: red; /*replace with H S L */
+  --card: 225 25% 11%;
 
-  --card-foreground: red; /*replace with H S L */
+  --card-foreground: 224 15% 92%;
 
-  --card-border: red; /*replace with H S L */
+  --card-border: 225 20% 16%;
 
-  --sidebar: red; /*replace with H S L */
+  --sidebar: 225 26% 10%;
 
-  --sidebar-foreground: red; /*replace with H S L */
+  --sidebar-foreground: 224 15% 88%;
 
-  --sidebar-border: red; /*replace with H S L */
+  --sidebar-border: 225 18% 18%;
 
-  --sidebar-primary: red; /*replace with H S L */
+  --sidebar-primary: 193 95% 52%;
 
-  --sidebar-primary-foreground: red; /*replace with H S L */
+  --sidebar-primary-foreground: 225 28% 8%;
 
-  --sidebar-accent: red; /*replace with H S L */
+  --sidebar-accent: 225 22% 15%;
 
-  --sidebar-accent-foreground: red; /*replace with H S L */
+  --sidebar-accent-foreground: 224 15% 88%;
 
-  --sidebar-ring: red; /*replace with H S L */
+  --sidebar-ring: 193 95% 52%;
 
-  --popover: red; /*replace with H S L */
+  --popover: 225 25% 11%;
 
-  --popover-foreground: red; /*replace with H S L */
+  --popover-foreground: 224 15% 92%;
 
-  --popover-border: red; /*replace with H S L */
+  --popover-border: 225 20% 16%;
 
-  --primary: red; /*replace with H S L */
+  --primary: 193 95% 52%;
 
-  --primary-foreground: red; /*replace with H S L */
+  --primary-foreground: 225 28% 8%;
 
-  --secondary: red; /*replace with H S L */
+  --secondary: 225 22% 15%;
 
-  --secondary-foreground: red; /*replace with H S L */
+  --secondary-foreground: 224 15% 88%;
 
-  --muted: red; /*replace with H S L */
+  --muted: 225 20% 14%;
 
-  --muted-foreground: red; /*replace with H S L */
+  --muted-foreground: 224 10% 55%;
 
-  --accent: red; /*replace with H S L */
+  --accent: 193 95% 52%;
 
-  --accent-foreground: red; /*replace with H S L */
+  --accent-foreground: 225 28% 8%;
 
-  --destructive: red; /*replace with H S L */
+  --destructive: 0 72% 51%;
 
-  --destructive-foreground: red; /*replace with H S L */
+  --destructive-foreground: 0 0% 100%;
 
   /* Used as the border around inputs. Dark mode: Should be a border that is light enough to have high contrast when rendered on a --card background. More contrast than standard --border */
-  --input: red; /*replace with H S L */
-  --ring: red; /*replace with H S L */
-  --chart-1: red; /*replace with H S L */
-  --chart-2: red; /*replace with H S L */
-  --chart-3: red; /*replace with H S L */
-  --chart-4: red; /*replace with H S L */
-  --chart-5: red; /*replace with H S L */
+  --input: 225 18% 24%;
+  --ring: 193 95% 52%;
+  --chart-1: 193 95% 52%;
+  --chart-2: 224 50% 60%;
+  --chart-3: 280 65% 60%;
+  --chart-4: 45 90% 55%;
+  --chart-5: 150 60% 50%;
 
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
@@ -317,6 +318,20 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 9999;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
 }
 
@@ -429,5 +444,42 @@
   .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
+  }
+
+  @keyframes typing-cursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .typing-cursor {
+    animation: typing-cursor 1s infinite;
+  }
+
+  @keyframes slide-up-fade {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-up-fade {
+    animation: slide-up-fade 0.4s ease-out forwards;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { 
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    }
+    50% { 
+      box-shadow: 0 0 30px hsl(var(--primary) / 0.5);
+    }
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
   }
 }
