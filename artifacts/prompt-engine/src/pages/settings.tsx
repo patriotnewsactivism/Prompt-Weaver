@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useGetSettings, useUpdateSettings, getGetSettingsQueryKey } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -11,17 +10,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Check, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Check, Zap, Brain, Sparkles } from 'lucide-react';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 
 const modelOptions = [
-  { value: 'gpt-4o', label: 'GPT-4o' },
-  { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-  { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
-  { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
-  { value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku' },
+  {
+    group: 'OpenAI — Thinking',
+    models: [
+      { value: 'o4-mini', label: 'o4-mini', description: 'Best for reasoning — thinks before answering', icon: Brain, recommended: true },
+    ],
+  },
+  {
+    group: 'OpenAI — General',
+    models: [
+      { value: 'gpt-5.6-terra', label: 'GPT-5.6 Terra', description: 'Best general-purpose model, fast & capable', icon: Sparkles },
+      { value: 'gpt-5.6-luna', label: 'GPT-5.6 Luna', description: 'Cost-efficient, high volume', icon: Zap },
+    ],
+  },
+  {
+    group: 'Gemini',
+    models: [
+      { value: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro', description: 'Most powerful Gemini model', icon: Sparkles },
+      { value: 'gemini-3-flash-preview', label: 'Gemini 3 Flash', description: 'Fast hybrid reasoning, great default', icon: Zap },
+    ],
+  },
 ];
+
+const allModels = modelOptions.flatMap((g) => g.models);
 
 export default function Settings() {
   const { data: settings, isLoading } = useGetSettings();
@@ -29,9 +45,7 @@ export default function Settings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const [apiKey, setApiKey] = useState('');
-  const [model, setModel] = useState('gpt-4o');
-  const [showApiKey, setShowApiKey] = useState(false);
+  const [model, setModel] = useState('o4-mini');
 
   useEffect(() => {
     if (settings) {
@@ -41,32 +55,20 @@ export default function Settings() {
 
   const handleSave = () => {
     updateSettings.mutate(
-      {
-        data: {
-          apiKey: apiKey.trim() || null,
-          model: model,
-        },
-      },
+      { data: { model } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
-          setApiKey('');
-          setShowApiKey(false);
-          toast({
-            title: 'Settings saved',
-            description: 'Your changes have been applied.',
-          });
+          toast({ title: 'Settings saved', description: 'Model updated successfully.' });
         },
         onError: () => {
-          toast({
-            title: 'Failed to save settings',
-            description: 'Please try again.',
-            variant: 'destructive',
-          });
+          toast({ title: 'Failed to save settings', description: 'Please try again.', variant: 'destructive' });
         },
       }
     );
   };
+
+  const selectedModel = allModels.find((m) => m.value === model);
 
   if (isLoading) {
     return (
@@ -84,8 +86,8 @@ export default function Settings() {
   return (
     <div className="min-h-[100dvh] bg-background">
       <div className="max-w-2xl mx-auto px-6 py-12">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -94,89 +96,109 @@ export default function Settings() {
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Settings</h1>
-          <p className="text-muted-foreground">Configure your API credentials and model preferences</p>
+          <p className="text-muted-foreground">Choose your AI model for prompt generation</p>
         </div>
 
-        <div className="bg-card border border-card-border rounded-lg p-6 space-y-6">
-          {/* API Key Status */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>API Key Status</Label>
-              {settings?.hasApiKey ? (
-                <div className="flex items-center gap-2 text-sm text-green-600">
-                  <Check className="w-4 h-4" />
-                  Configured
+        <div className="space-y-4">
+          {/* AI Status */}
+          <div className="bg-card border border-card-border rounded-lg p-6">
+            <h2 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">AI Connections</h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
+                    <span className="text-xs font-bold text-foreground">OAI</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">OpenAI</p>
+                    <p className="text-xs text-muted-foreground">Via Replit AI Integration</p>
+                  </div>
                 </div>
-              ) : (
-                <div className="flex items-center gap-2 text-sm text-yellow-600">
-                  <AlertCircle className="w-4 h-4" />
-                  Not configured
+                <div className="flex items-center gap-1.5 text-xs text-green-500 font-medium">
+                  <Check className="w-3.5 h-3.5" />
+                  Connected
                 </div>
-              )}
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
+                    <span className="text-xs font-bold text-foreground">GEM</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Gemini</p>
+                    <p className="text-xs text-muted-foreground">Via Replit AI Integration</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-green-500 font-medium">
+                  <Check className="w-3.5 h-3.5" />
+                  Connected
+                </div>
+              </div>
             </div>
-            {!settings?.hasApiKey && (
-              <p className="text-xs text-muted-foreground">
-                An API key is required to generate prompts. Add your OpenAI or Anthropic API key below.
-              </p>
-            )}
-          </div>
-
-          {/* API Key Input */}
-          <div className="space-y-2">
-            <Label htmlFor="apiKey">Update API Key</Label>
-            <div className="space-y-2">
-              <Input
-                id="apiKey"
-                type={showApiKey ? 'text' : 'password'}
-                placeholder="sk-..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                data-testid="input-api-key"
-              />
-              <button
-                onClick={() => setShowApiKey(!showApiKey)}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showApiKey ? 'Hide' : 'Show'} API key
-              </button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Your API key is stored securely and never logged. Leave blank to keep current key.
-            </p>
           </div>
 
           {/* Model Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="model">Model</Label>
-            <Select value={model} onValueChange={setModel}>
-              <SelectTrigger id="model" data-testid="select-model">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {modelOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              Choose the language model for prompt generation
-            </p>
+          <div className="bg-card border border-card-border rounded-lg p-6">
+            <h2 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">Active Model</h2>
+
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="model" className="sr-only">Model</Label>
+                <Select value={model} onValueChange={setModel}>
+                  <SelectTrigger id="model" data-testid="select-model" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modelOptions.map((group) => (
+                      <div key={group.group}>
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          {group.group}
+                        </div>
+                        {group.models.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            <div className="flex items-center gap-2">
+                              <span>{option.label}</span>
+                              {option.recommended && (
+                                <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
+                                  Recommended
+                                </span>
+                              )}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </div>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedModel && (
+                <div className="flex items-start gap-3 p-3 rounded-md bg-muted/50 border border-border">
+                  <selectedModel.icon className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{selectedModel.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{selectedModel.description}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6">
+              <Button
+                onClick={handleSave}
+                disabled={updateSettings.isPending}
+                className="w-full"
+                size="lg"
+                data-testid="button-save-settings"
+              >
+                {updateSettings.isPending ? 'Saving...' : 'Save Model'}
+              </Button>
+            </div>
           </div>
 
-          {/* Save Button */}
-          <div className="pt-4">
-            <Button
-              onClick={handleSave}
-              disabled={updateSettings.isPending}
-              className="w-full"
-              size="lg"
-              data-testid="button-save-settings"
-            >
-              {updateSettings.isPending ? 'Saving...' : 'Save Settings'}
-            </Button>
-          </div>
+          <p className="text-xs text-muted-foreground text-center px-4">
+            All models run via Replit AI Integrations — no API keys required. Usage is billed to your Replit credits.
+          </p>
         </div>
       </div>
     </div>
