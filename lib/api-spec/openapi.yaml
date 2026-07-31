@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: API specification for the Prompt Reasoning Engine
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: sessions
+    description: Prompt reasoning sessions
+  - name: iterations
+    description: Prompt iterations within a session
+  - name: settings
+    description: App settings including API key
 paths:
   /healthz:
     get:
@@ -24,6 +30,169 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get current settings
+      responses:
+        "200":
+          description: Current settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+    put:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Update settings (API key, model)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsInput"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+
+  /sessions:
+    get:
+      operationId: listSessions
+      tags: [sessions]
+      summary: List all prompt sessions
+      responses:
+        "200":
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SessionSummary"
+    post:
+      operationId: createSession
+      tags: [sessions]
+      summary: Create a new prompt reasoning session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionInput"
+      responses:
+        "201":
+          description: Created session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/{id}:
+    get:
+      operationId: getSession
+      tags: [sessions]
+      summary: Get a session with all its iterations
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Session with iterations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionWithIterations"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    delete:
+      operationId: deleteSession
+      tags: [sessions]
+      summary: Delete a session and all its iterations
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /sessions/{id}/iterations:
+    get:
+      operationId: listIterations
+      tags: [iterations]
+      summary: List all iterations for a session
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of iterations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Iteration"
+
+  /sessions/{id}/iterate:
+    post:
+      operationId: generateIteration
+      tags: [iterations]
+      summary: Generate the next improved prompt (SSE stream)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IterationInput"
+      responses:
+        "200":
+          description: SSE stream of reasoning and improved prompt
+          content:
+            text/event-stream: {}
+        "400":
+          description: Bad request (missing API key etc.)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +203,167 @@ components:
       required:
         - status
 
+    Settings:
+      type: object
+      properties:
+        hasApiKey:
+          type: boolean
+        model:
+          type: string
+      required:
+        - hasApiKey
+        - model
+
+    SettingsInput:
+      type: object
+      properties:
+        apiKey:
+          type: ["string", "null"]
+        model:
+          type: string
+      required: []
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        situation:
+          type: string
+        iterationCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - situation
+        - iterationCount
+        - createdAt
+        - updatedAt
+
+    SessionSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        situation:
+          type: string
+        iterationCount:
+          type: integer
+        latestPrompt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - situation
+        - iterationCount
+        - latestPrompt
+        - createdAt
+        - updatedAt
+
+    SessionWithIterations:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        situation:
+          type: string
+        iterationCount:
+          type: integer
+        iterations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Iteration"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - situation
+        - iterationCount
+        - iterations
+        - createdAt
+        - updatedAt
+
+    SessionInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        situation:
+          type: string
+          minLength: 1
+          description: The goal or situation to generate a prompt for
+      required:
+        - title
+        - situation
+
+    Iteration:
+      type: object
+      properties:
+        id:
+          type: integer
+        sessionId:
+          type: integer
+        iterationNumber:
+          type: integer
+        prompt:
+          type: string
+        reasoning:
+          type: string
+          description: Why this prompt is better than the previous one
+        focusArea:
+          type: ["string", "null"]
+          description: The aspect focused on for this improvement
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - sessionId
+        - iterationNumber
+        - prompt
+        - reasoning
+        - focusArea
+        - createdAt
+
+    IterationInput:
+      type: object
+      properties:
+        userFeedback:
+          type: ["string", "null"]
+          description: Optional user feedback on the previous prompt
+        focusArea:
+          type: ["string", "null"]
+          description: Specific aspect to focus improvement on (clarity, specificity, tone, etc.)
+      required: []
+
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
