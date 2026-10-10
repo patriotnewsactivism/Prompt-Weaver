@@ -1,0 +1,134 @@
+# Base44 sandbox development environment for the Prompt Reasoning Engine.
+#
+# Runs the monorepo straight from the cloned source (bind-mounted, live reload) —
+# no prebuilt application images. Details and sandbox-only overrides: see AGENTS.md.
+#
+#   db      PostgreSQL 16 (data in the `pgdata` volume)
+#   deps    one-shot `pnpm install --frozen-lockfile` for the whole pnpm workspace
+#   migrate one-shot `drizzle-kit push` (creates/updates the app tables)
+#   api     Express API server, live-reloaded with tsx watch, on :8080
+#   web     Vite dev server for the React frontend on :3000 (the preview entry point)
+name: prompt-reasoning-engine
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_USER: prompt
+      POSTGRES_PASSWORD: prompt
+      POSTGRES_DB: prompt_engine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prompt -d prompt_engine"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  # Shared dependency install: pnpm workspaces keep node_modules next to each
+  # package, so a single installer keeps the two app services from racing each other
+  # over the same directories.
+  deps:
+    build:
+      context: .
+      dockerfile: Dockerfile.base44
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      # Non-interactive install (the repo's preinstall guard requires pnpm).
+      CI: "true"
+    command: ["sh", "-ec", "pnpm install --frozen-lockfile"]
+    restart: "no"
+
+  # Schema is defined with Drizzle (lib/db/src/schema); push it before the API starts.
+  # Re-run after schema changes: docker compose -f docker-compose.base44.yml run --rm migrate
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.base44
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgres://prompt:prompt@db:5432/prompt_engine
+    command: ["sh", "-ec", "pnpm --filter @workspace/db run push-force"]
+    depends_on:
+      db:
+        condition: service_healthy
+      deps:
+        condition: service_completed_successfully
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.base44
+    working_dir: /app/artifacts/api-server
+    volumes:
+      - .:/app
+    environment:
+      PORT: "8080"
+      NODE_ENV: development
+      DATABASE_URL: postgres://prompt:prompt@db:5432/prompt_engine
+      # Sandbox preview switch: passed through so app code can detect it. Never hardcoded.
+      BASE44_PREVIEW_MODE: ${BASE44_PREVIEW_MODE:-}
+    env_file:
+      # Public endpoint defaults first, platform-managed secrets last (they win).
+      - ./.env.base44-defaults
+      - path: /run/base44/app.env
+        required: false
+    # tsx watch = live reload for the API. tsx ships with @workspace/scripts, so it is
+    # invoked through that package rather than the api-server's own build+start script.
+    command: ["sh", "-ec", "exec pnpm --filter @workspace/scripts exec tsx watch /app/artifacts/api-server/src/index.ts"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/api/healthz').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    restart: on-failure
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.base44
+    working_dir: /app/artifacts/prompt-engine
+    volumes:
+      - .:/app
+    environment:
+      # The Vite config requires PORT and BASE_PATH (see artifacts/prompt-engine/vite.config.ts).
+      PORT: "22503"
+      BASE_PATH: "/"
+      BASE44_PREVIEW_MODE: ${BASE44_PREVIEW_MODE:-}
+      # Single-origin wiring: the dev server proxies /api to the API container
+      # (see the gated proxy config in artifacts/prompt-engine/vite.config.ts).
+      API_PROXY_TARGET: http://api:8080
+    command: ["sh", "-ec", "exec pnpm --filter @workspace/prompt-engine run dev"]
+    ports:
+      - "3000:22503"
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+      api:
+        condition: service_healthy
+    healthcheck:
+      # Vite's dev server answers / with the SPA shell once it is serving.
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:22503/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    restart: on-failure
+
+volumes:
+  pgdata:
