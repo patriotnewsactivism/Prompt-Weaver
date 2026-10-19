@@ -1,0 +1,14 @@
+# Base image for the Base44 sandbox dev environment (see docker-compose.base44.yml).
+#
+# It only provides a Node runtime plus the workspace's pinned package manager — no
+# application source is baked in. Every service bind-mounts the repo at /app and
+# installs dependencies from the checked-in lockfile at startup, so edits are picked
+# up live.
+FROM node:24-bookworm-slim
+
+# pnpm is the workspace's package manager (pnpm-lock.yaml, lockfileVersion 9.0).
+# pnpm 10 is the version that honours the pnpm-workspace.yaml supply-chain settings
+# (minimumReleaseAge / onlyBuiltDependencies) this repo relies on.
+RUN corepack enable && corepack prepare pnpm@10.34.6 --activate
+
+WORKDIR /app

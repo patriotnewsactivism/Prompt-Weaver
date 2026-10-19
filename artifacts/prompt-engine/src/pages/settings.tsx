@@ -10,11 +10,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Check, Zap, Brain, Sparkles } from 'lucide-react';
+import { ArrowLeft, Check, Zap, Brain, Sparkles, type LucideIcon } from 'lucide-react';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 
-const modelOptions = [
+type ModelOption = {
+  value: string;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+  recommended?: boolean;
+};
+
+const modelOptions: { group: string; models: ModelOption[] }[] = [
   {
     group: 'OpenAI — Thinking',
     models: [
