@@ -1,0 +1,19 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "AI_INTEGRATIONS_GEMINI_API_KEY",
+      "description": "Gemini API key used to generate and improve prompts. Get one at https://aistudio.google.com/apikey (or supply the key for your own Gemini-compatible proxy together with AI_INTEGRATIONS_GEMINI_BASE_URL).",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "AI_INTEGRATIONS_OPENAI_API_KEY",
+      "description": "OpenAI API key, only needed when a GPT/o-series model is picked on the Settings page. Get one at https://platform.openai.com/api-keys.",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    }
+  ]
+}
