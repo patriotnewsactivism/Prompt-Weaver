@@ -27,6 +27,19 @@ if (!basePath) {
   );
 }
 
+// Base44 sandbox only: the preview exposes a single port, so the dev server proxies
+// API calls to the Express server (single-origin wiring — see AGENTS.md). Skipped
+// unless BASE44_PREVIEW_MODE is exactly "1", so Replit's own router is unaffected.
+const previewProxy =
+  process.env.BASE44_PREVIEW_MODE === '1' && process.env.API_PROXY_TARGET
+    ? {
+        '/api': {
+          target: process.env.API_PROXY_TARGET,
+          changeOrigin: true,
+        },
+      }
+    : undefined;
+
 export default defineConfig({
   base: basePath,
   plugins: [
@@ -69,6 +82,7 @@ export default defineConfig({
     strictPort: true,
     host: '0.0.0.0',
     allowedHosts: true,
+    proxy: previewProxy,
     fs: {
       strict: true,
     },
