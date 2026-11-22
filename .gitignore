@@ -47,3 +47,11 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Base44 sandbox (local-only preview scaffolding)
+.pnpm-store/
+.base44/
+docker-compose.base44.yml
+Dockerfile.base44
+.env.base44-defaults
+AGENTS.md
